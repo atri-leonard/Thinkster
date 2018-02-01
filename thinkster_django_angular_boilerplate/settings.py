@@ -38,7 +38,10 @@ INSTALLED_APPS = (
     'django.contrib.staticfiles',
     'rest_framework',
     'compressor',
+    'authentication',
 )
+
+AUTH_USER_MODEL = 'authentication.Account'
 
 MIDDLEWARE_CLASSES = (
     'django.contrib.sessions.middleware.SessionMiddleware',
