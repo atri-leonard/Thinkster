@@ -1,5 +1,7 @@
-from rest_framework import permissions, viewsets
+import json
 
+from rest_framework import permissions, viewsets
+from django.contrib.auth import authenticate, login
 from authentication.models import Account
 from authentication.permissions import IsAccountOwner
 from authentication.serializers import AccountSerializer
@@ -30,3 +32,34 @@ class AccountViewSet(viewsets.ModelViewSet):
             'status': 'Bad request',
             'message': 'Account could not be created with received data.'
         }, status=status.HTTP_400_BAD_REQUEST)
+
+
+class LoginView(views.APIView):
+    def post(self, request, format=None):
+        data = json.loads(request.body)
+
+        email = data.get('email', None)
+        password = data.get('password', None)
+        print(email, ' ', password)
+        account = authenticate(email=email, password=password)
+        print("222")
+        if account is not None:
+            print("333")
+            if account.is_active:
+                print("444")
+                login(request, account)
+
+                serialized = AccountSerializer(account)
+
+                return Response(serialized.data)
+            else:
+                return Response({
+                    'status': 'Unauthorized',
+                    'message': 'This account has been disabled.'
+                }, status=status.HTTP_401_UNAUTHORIZED)
+        else:
+            print("999")
+            return Response({
+                'status': 'Unauthorized',
+                'message': 'Username/password combination invalid.'
+            }, status=status.HTTP_401_UNAUTHORIZED)

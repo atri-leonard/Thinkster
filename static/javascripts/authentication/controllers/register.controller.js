@@ -16,9 +16,15 @@
   */
   function RegisterController($location, $scope, Authentication) {
     var vm = this;
-
+    activate();
     vm.register = register;
 
+
+    function activate() {
+        if(Authentication.isAuthenticated()){
+          $location.url('/');
+        }
+    }
     /**
     * @name register
     * @desc Register a new user
